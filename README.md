@@ -15,7 +15,7 @@ Creates a ffmpeg conversion script from a list of input files.
 * Creates a list of all *.flac* files in the current directory.
 
 `ffmpeg-mass-conv.sh -xi .flac -xo .opus --argsout "-c:a opus -b:a 450k" -o wewlads.sh /tmp/my_list_of_flac_files.txt`  
-* Creates a ffmpeg script named *wewlads.sh* which converts listed *.flac* files to *.opus* music files with the specified options.
+* Creates a ffmpeg script named *wewlads.sh* which converts each listed *.flac* file to a *.opus* music file with the specified options.
 
 `./wewlads.sh`  
-* Executes the newly created script and convert the *.flac* files to *.opus* files.
+* Executes the newly created script and convert every single *.flac* files to a *.opus* file.
