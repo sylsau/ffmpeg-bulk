@@ -19,3 +19,19 @@ Creates a ffmpeg conversion script from a list of input files.
 
 `./wewlads.sh`  
 * Executes the newly created script and convert every single *.flac* files to a *.opus* file.
+
+#### Example of generated script:
+
+    ### list.txt ###
+    01 Fahrenheit Fair Enough.mp3
+    02 TTV.mp3
+    03 Lotus Above Water.mp3
+    [...]
+
+`ffmpeg-mass-conv.sh list.txt -xi .mp3 -xo .ogg -ao "-c:a libvorbis -b:a 128k"`
+
+    ### ffmpeg_cmd.sh generated script ###
+    ffmpeg  -i "01 Fahrenheit Fair Enough.mp3" -c:a libvorbis -b:a 128k "01 Fahrenheit Fair Enough.ogg" || exit  
+    ffmpeg  -i "02 TTV.mp3" -c:a libvorbis -b:a 128k "02 TTV.ogg" || exit  
+    ffmpeg  -i "03 Lotus Above Water.mp3" -c:a libvorbis -b:a 128k "03 Lotus Above Water.ogg" || exit  
+    [...]
