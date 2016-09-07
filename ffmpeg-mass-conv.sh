@@ -113,7 +113,7 @@ echo ":: Script \"$f_ffmpeg_script\" now ready to be executed"
 if test $v_force_exec -eq 1; then
     if test "$(basename "$f_ffmpeg_script")" = "$f_ffmpeg_script"; then
         f_ffmpeg_script="$(pwd)/$f_ffmpeg_script"
-        echo ":: Corrected script name : $f_ffmpeg_script"
+        #echo ":: Corrected script name : $f_ffmpeg_script"
     fi
     exec "$f_ffmpeg_script"
 fi
