@@ -18,7 +18,7 @@ Creates a ffmpeg conversion script from a list of input files.
 * Creates a ffmpeg script named *wewlads.sh* which converts each listed *.flac* file to a *.opus* music file with the specified options.
 
 `./wewlads.sh`  
-* Executes the newly created script and convert every single *.flac* files to a *.opus* file.
+* Executes the newly created script and convert every single *.flac* file to *.opus* files.
 
 #### Example of generated script:
 
