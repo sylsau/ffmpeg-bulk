@@ -5,9 +5,10 @@ Creates a ffmpeg conversion script from a list of input files.
 
 ### Usage:
 
-`ffmpeg-mass-conv.sh [--extin,-xi EXTENSION_OF_IN_FILES] [--extout,-xo EXTENSION_OF_OUT_FILES] [--argsin,-ai FFMPEG_ARGS_IN] [--argsout,-ao FFMPEG_ARGS_OUT] [--outfile,-o SCRIPT_FILENAME] LIST`
+`ffmpeg-mass-conv.sh [--extin,-xi EXTENSION_OF_IN_FILES] [--extout,-xo EXTENSION_OF_OUT_FILES] [--argsin,-ai FFMPEG_ARGS_IN] [--argsout,-ao FFMPEG_ARGS_OUT] [--outfile,-o SCRIPT_FILENAME] [--execute,-e] LIST`
 * `FFMPEG_ARGS_IN` are ffmpeg arguments for the input file
 * `FFMPEG_ARGS_OUT` are ffmpeg arguments for the output file
+* `-e` : directly executes the newly created script
 
 ### Example:
 
@@ -19,6 +20,9 @@ Creates a ffmpeg conversion script from a list of input files.
 
 `./wewlads.sh`  
 * Executes the newly created script and convert every single *.flac* file to *.opus* files.
+
+`ffmpeg-mass-conv.sh -xi .flac -xo .opus --argsout "-c:a opus -b:a 450k" -o wewlads.sh /tmp/my_list_of_flac_files.txt -e`  
+* Creates a ffmpeg script named *wewlads.sh* which converts each listed *.flac* file to a *.opus* music file with the specified options, and directly executes it right away (equivalent to both previous commands).
 
 #### Example of generated script:
 
