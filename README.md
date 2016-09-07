@@ -22,7 +22,7 @@ Creates a ffmpeg conversion script from a list of input files.
 * Executes the newly created script and convert every single *.flac* file to *.opus* files.
 
 `ffmpeg-mass-conv.sh -xi .wav -xo .flac -o wewlads.sh cdda_list.txt -e`  
-* Creates a ffmpeg script named *wewlads.sh* which converts each listed *.flac* file to a *.opus* music file with the specified options, and directly executes it (`-e`) right away (equivalent to both previous commands put together).
+* Creates a ffmpeg script named *wewlads.sh* which converts each listed *.wav* file to a *.flac* music file and directly executes it (`-e`) right away (equivalent to both previous commands put together).
 
 #### Example of generated script:
 
