@@ -65,9 +65,11 @@ else
     done
 fi
 
-if test "$f_list" = ""; then
-    echo ":: ERROR : no list file provided !"
-    v_help=1
+if test $v_help -eq 0 ; then
+    if test "$f_list" = ""; then
+        echo ":: ERROR : no list file provided !"
+        v_help=1
+    fi
 fi
 
 if test $v_help -eq 1 ; then
@@ -76,15 +78,15 @@ if test $v_help -eq 1 ; then
     echo
     echo "Usage:"
     echo "    $0 [--extin,-xi EXTENSION_OF_IN_FILES] [--extout,-xo EXTENSION_OF_OUT_FILES] [--argsin,-ai FFMPEG_ARGS_IN] [--argsout,-ao FFMPEG_ARGS_OUT] [--outfile,-o SCRIPT_FILENAME] [--execute,-e] LIST"
-    echo "        FFMPEG_ARGS_IN are ffmpeg arguments for the input file"
-    echo "        FFMPEG_ARGS_OUT are ffmpeg arguments for the output file"
-    echo "        -e : directly executes the newly created script"
+    echo "        FFMPEG_ARGS_IN :  ffmpeg arguments for the input file"
+    echo "        FFMPEG_ARGS_OUT : ffmpeg arguments for the output file"
+    echo "        -e :              directly executes the newly created script, then prompts for removal"
     echo
     echo "Example:"
     echo "    ls *.flac > my_list_of_flac_files.txt"
     echo "        Creates a list of all .flac files in the current directory."
     echo "    $0 -xi .flac -xo .opus --argsout \"-c:a opus -b:a 450k\" -o wewlads.sh /tmp/my_list_of_flac_files.txt"
-    echo "        Creates a ffmpeg script named \'wewlads.sh\' which converts each listed .flac file to a .opus music file with the specified options."
+    echo "        Creates a ffmpeg script named 'wewlads.sh' which converts each listed .flac file to a .opus music file with the specified options."
     echo "    ./wewlads.sh"
     echo "        Executes the newly created script and converts every single .flac file to .opus files."
     exit
@@ -115,7 +117,8 @@ if test $v_force_exec -eq 1; then
         f_ffmpeg_script="$(pwd)/$f_ffmpeg_script"
         #echo ":: Corrected script name : $f_ffmpeg_script"
     fi
-    exec "$f_ffmpeg_script"
+    "$f_ffmpeg_script"
+    rm -i "$f_ffmpeg_script"
 fi
 
 exit
