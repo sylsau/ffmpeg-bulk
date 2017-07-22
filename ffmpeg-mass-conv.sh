@@ -118,7 +118,7 @@ if test $v_force_exec -eq 1; then
         #echo ":: Corrected script name : $f_ffmpeg_script"
     fi
     "$f_ffmpeg_script"
-    rm -i "$f_ffmpeg_script"
+    rm -i "$f_ffmpeg_script" "$f_list"
 fi
 
 exit
