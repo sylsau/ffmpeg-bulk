@@ -6,58 +6,137 @@
 #   DESCRIPTION: Create a ffmpeg conversion script from a list of input files.
 # 
 #       OPTIONS: ---
-#  REQUIREMENTS: sed, gawk
+#  REQUIREMENTS: sed, gawk, ffmpeg, tee
 #          BUGS: ---
 #         NOTES: ---
 #        AUTHOR: Sylvain Saubier (ResponSyS), mail@systemicresponse.com
 #       CREATED: 01/05/16 14:09
 #===============================================================================
 
-v_help=0
-v_force_exec=0
-f_list=''
-f_list_working='/tmp/ffmpegconv_list'
-f_ffmpeg_script='./ffmpeg_cmd.sh'
-v_argsin=''
-v_argsout=''
-v_extin=''
-v_extout=''
+set -o errexit
+#set -o nounset
+
+PROGRAM_NAME="ffmpeg-mass-conv.sh"
+
+FMT_BOLD='\e[1m'
+FMT_UNDERL='\e[4m'
+FMT_OFF='\e[0m'
+
+ERR_NO_CMD=60
+
+FORCE_EXEC=0
+F_LIST=""
+F_WORKLIST='/tmp/ffmpegmassconv_list'
+F_FFMPEG_SCRIPT='./ffmpeg_cmd.sh'
+ARGSIN=''
+ARGSOUT=''
+EXTIN=''
+EXTOUT=''
+
+
+# $1 = command to test (string)
+fn_needCmd() {
+    if ! command -v "$1" > /dev/null 2>&1
+        then fn_err "need '$1' (command not found)" $ERR_NO_CMD
+    fi
+}
+# $1 = message (string)
+m_say() {
+    echo -e "$PROGRAM_NAME: $1"
+}
+# $1 = error message (string), $2 = return code (int)
+fn_err() {
+    m_say "${FMT_BOLD}ERROR${FMT_OFF}: $1" >&2
+    exit $2
+}
+
+fn_help() {
+    cat << EOF
+$PROGRAM_NAME v20170917
+    Create a ffmpeg conversion script from a list of input files.
+
+REQUIREMENTS
+    sed, gawk, ffmpeg, tee
+
+USAGE
+    $PROGRAM_NAME [--extin|-xi EXTENSION_OF_IN_FILES] [--extout|-xo EXTENSION_OF_OUT_FILES] [--argsin|-ai FFMPEG_ARGS_IN] [--argsout|-ao FFMPEG_ARGS_OUT] [--outfile|-o SCRIPT_FILENAME] [--execute|-e] LIST
+
+OPTIONS AND ARGUMENTS
+    FFMPEG_ARGS_IN    ffmpeg arguments for the input file
+    FFMPEG_ARGS_OUT   ffmpeg arguments for the output file
+    -e                directly executes the newly created script, then prompts for removal
+
+EXAMPLE
+    Creates a list of all .flac files in the current directory:
+        $ ls -x *.flac > my_list_of_flac_files.txt
+
+    Creates a ffmpeg script named 'wewlads.sh' which converts each listed .flac 
+    file to a .opus music file with the specified options:
+        $ $PROGRAM_NAME -xi .flac -xo .opus --argsout "-c:a opus -b:a 450k" \\
+        -o wewlads.sh /tmp/my_list_of_flac_files.txt
+
+    Executes the newly created script and converts every single .flac file to .opus files.
+        $ ./wewlads.sh
+
+    Creates a ffmpeg script to convert each listed .wav file in cdda_list.txt to 
+    a .flac music file and executes it right away before prompting for its 
+    removal (equivalent to both previous commands put together plus \`rm -i 
+    wewlads.sh\`).
+        $ ffmpeg-mass-conv.sh -xi .wav -xo .flac cdda_list.txt -e
+
+AUTHOR
+    Written by Sylvain Saubier (<http://SystemicResponse.com>)
+
+REPORTING BUGS
+    Mail at: <feedback@systemicresponse.com>
+EOF
+}
+
+fn_showParams() {
+    m_say "list file is: $F_LIST, -xi: $EXTIN, -xo: $EXTOUT, -ai: $ARGSIN, -ao: $ARGSOUT, -o: $F_FFMPEG_SCRIPT" >&2
+}
+
+fn_needCmd "sed"
+fn_needCmd "gawk"
+fn_needCmd "ffmpeg"
+fn_needCmd "tee"
 
 if test -z "$*"; then
-    v_help=1
+    fn_help
+    exit
 else
     # Individually check provided args
     while test -n "$1" ; do
         case $1 in
             "--help"|"-h")
-                v_help=1
-                break
+                fn_help
+                exit
                 ;;
             "--extin"|"-xi")
-                v_extin=$2
+                EXTIN=$2
                 shift
                 ;;
             "--extout"|"-xo")
-                v_extout=$2
+                EXTOUT=$2
                 shift
                 ;;
             "--argsin"|"-ai")
-                v_argsin=$2
+                ARGSIN=$2
                 shift
                 ;;
             "--argsout"|"-ao")
-                v_argsout=$2
+                ARGSOUT=$2
                 shift
                 ;;
             "--outfile"|"-o")
-                f_ffmpeg_script="$2"
+                F_FFMPEG_SCRIPT="$2"
                 shift
                 ;;
             "--execute"|"-e")
-                v_force_exec=1
+                FORCE_EXEC=1
                 ;;
             *)
-                f_list=$1
+                F_LIST="$1"
                 ;;
         esac	# --- end of case ---
         # Delete $1
@@ -65,63 +144,37 @@ else
     done
 fi
 
-if test $v_help -eq 0 ; then
-    if test "$f_list" = ""; then
-        echo ":: ERROR : no list file provided !"
-        v_help=1
-    fi
+if test "$F_LIST" = ""; then
+    fn_err "no list file provided !"
 fi
 
-if test $v_help -eq 1 ; then
-    echo
-    echo "Create a ffmpeg conversion script from a list of input files."
-    echo
-    echo "REQUIREMENTS"
-    echo "    sed, gawk"
-    echo
-    echo "Usage:"
-    echo "    $0 [--extin|-xi EXTENSION_OF_IN_FILES] [--extout|-xo EXTENSION_OF_OUT_FILES] [--argsin|-ai FFMPEG_ARGS_IN] [--argsout|-ao FFMPEG_ARGS_OUT] [--outfile|-o SCRIPT_FILENAME] [--execute|-e] LIST"
-    echo "        FFMPEG_ARGS_IN :  ffmpeg arguments for the input file"
-    echo "        FFMPEG_ARGS_OUT : ffmpeg arguments for the output file"
-    echo "        -e :              directly executes the newly created script, then prompts for removal"
-    echo
-    echo "Example:"
-    echo "    ls -x *.flac > my_list_of_flac_files.txt"
-    echo "        Creates a list of all .flac files in the current directory."
-    echo "    $0 -xi .flac -xo .opus --argsout \"-c:a opus -b:a 450k\" -o wewlads.sh /tmp/my_list_of_flac_files.txt"
-    echo "        Creates a ffmpeg script named 'wewlads.sh' which converts each listed .flac file to a .opus music file with the specified options."
-    echo "    ./wewlads.sh"
-    echo "        Executes the newly created script and converts every single .flac file to .opus files."
-    exit
-fi
+fn_showParams
 
-echo ":: List file is: $f_list"
-echo ":: -xi: $v_extin"
-echo ":: -xo: $v_extout"
-echo ":: -ai: $v_argsin"
-echo ":: -ao: $v_argsout"
-echo ":: -o: $f_ffmpeg_script"
+cp "$F_LIST" "$F_WORKLIST" || exit
 
-cp "$f_list" "$f_list_working" || exit
+sed -i "s/$EXTIN//" "$F_WORKLIST"
 
-sed -i "s/$v_extin//" "$f_list_working"
+m_say "generating script as follows:"
+echo "# Script generated by $PROGRAM_NAME
+# Press CTRL+C (^C) to exit the script while in execution" > "$F_FFMPEG_SCRIPT"
+gawk -v v_xi="$EXTIN" -v v_xo="$EXTOUT" -v v_ai="$ARGSIN" -v v_ao="$ARGSOUT" '{print "ffmpeg "v_ai" -i \""$0 v_xi"\" "v_ao" \""$0 v_xo"\" || exit"}' "$F_WORKLIST" | tee -a "$F_FFMPEG_SCRIPT"
 
-echo ":: Generating script as follows:"
-echo "# Script generated by $0
-# Press CTRL+C (^C) to exit the script while in execution" > "$f_ffmpeg_script"
-gawk -v v_xi="$v_extin" -v v_xo="$v_extout" -v v_ai="$v_argsin" -v v_ao="$v_argsout" '{print "ffmpeg "v_ai" -i \""$0 v_xi"\" "v_ao" \""$0 v_xo"\" || exit"}' "$f_list_working" | tee -a "$f_ffmpeg_script"
-echo ":: Script generated"
-echo ":: Granting execution permission..."
-chmod ug+x "$f_ffmpeg_script"
-echo ":: Script \"$f_ffmpeg_script\" now ready to be executed"
+m_say "script generated"
+m_say "granting execution permission..."
+chmod ug+x "$F_FFMPEG_SCRIPT"
+m_say "script \"$F_FFMPEG_SCRIPT\" now ready to be executed"
 
-if test $v_force_exec -eq 1; then
-    if test "$(basename "$f_ffmpeg_script")" = "$f_ffmpeg_script"; then
-        f_ffmpeg_script="$(pwd)/$f_ffmpeg_script"
-        #echo ":: Corrected script name : $f_ffmpeg_script"
-    fi
-    "$f_ffmpeg_script"
-    rm -i "$f_ffmpeg_script" "$f_list"
+# isn't that part messy asf fam?
+if test $FORCE_EXEC -eq 1; then
+#     # if relative path to F_FFMPEG_SCRIPT, make it absolute
+#     if test "$(basename "$F_FFMPEG_SCRIPT")" = "$F_FFMPEG_SCRIPT"; then
+#         F_FFMPEG_SCRIPT="$(pwd)/$F_FFMPEG_SCRIPT"
+#         #m_say "corrected script name : $F_FFMPEG_SCRIPT"
+#     fi
+#     "$F_FFMPEG_SCRIPT"
+#     rm -i "$F_FFMPEG_SCRIPT" "$F_LIST"
+    trap "rm -i '$F_FFMPEG_SCRIPT' '$F_LIST'" EXIT
+    /bin/bash "$F_FFMPEG_SCRIPT" 
 fi
 
 exit
