@@ -83,7 +83,7 @@ if test $v_help -eq 1 ; then
     echo "        -e :              directly executes the newly created script, then prompts for removal"
     echo
     echo "Example:"
-    echo "    ls *.flac > my_list_of_flac_files.txt"
+    echo "    ls -x *.flac > my_list_of_flac_files.txt"
     echo "        Creates a list of all .flac files in the current directory."
     echo "    $0 -xi .flac -xo .opus --argsout \"-c:a opus -b:a 450k\" -o wewlads.sh /tmp/my_list_of_flac_files.txt"
     echo "        Creates a ffmpeg script named 'wewlads.sh' which converts each listed .flac file to a .opus music file with the specified options."

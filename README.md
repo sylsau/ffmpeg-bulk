@@ -12,7 +12,7 @@ Creates a ffmpeg conversion script from a list of input files.
 
 ### Example:
 
-`ls *.flac > my_list_of_flac_files.txt`  
+`ls -x *.flac > my_list_of_flac_files.txt`  
 * Creates a list of all *.flac* files in the current directory.
 
 `ffmpeg-mass-conv.sh -xi .flac -xo .opus --argsout "-c:a opus -b:a 450k" -o wewlads.sh /tmp/my_list_of_flac_files.txt`  
