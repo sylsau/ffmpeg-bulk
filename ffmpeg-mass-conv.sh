@@ -76,6 +76,9 @@ if test $v_help -eq 1 ; then
     echo
     echo "Create a ffmpeg conversion script from a list of input files."
     echo
+    echo "REQUIREMENTS"
+    echo "    sed, gawk"
+    echo
     echo "Usage:"
     echo "    $0 [--extin|-xi EXTENSION_OF_IN_FILES] [--extout|-xo EXTENSION_OF_OUT_FILES] [--argsin|-ai FFMPEG_ARGS_IN] [--argsout|-ao FFMPEG_ARGS_OUT] [--outfile|-o SCRIPT_FILENAME] [--execute|-e] LIST"
     echo "        FFMPEG_ARGS_IN :  ffmpeg arguments for the input file"
