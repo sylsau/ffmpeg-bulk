@@ -1,8 +1,8 @@
 # ffmpeg-mass-conv
 ## FFMPEG MASS CONVERTER
 
-Creates a ffmpeg conversion script from a list of input files.
-**Requires: sed, gawk, ffmpeg, tee**
+Creates a ffmpeg conversion script from a list of input files.  
+**Requires: `sed`, `gawk`, `ffmpeg`, `tee`**
 
 ### Usage:
 
