@@ -13,10 +13,15 @@
 #       CREATED: 01/05/16 14:09
 #===============================================================================
 
-set -o errexit
-#set -o nounset
+# TODO: remake this
+# 	make list internally
+# 	update the whole thing
 
-PROGRAM_NAME="ffmpeg-mass-conv.sh"
+[[ $DEBUG ]] && set -o errexit -o nounset -o pipefail
+set -o errexit
+
+PROGRAM_NAME="${0##*/}"
+SCRIPT_NAME="${0##*/}"
 
 FMT_BOLD='\e[1m'
 FMT_UNDERL='\e[4m'
@@ -62,13 +67,14 @@ USAGE
     $PROGRAM_NAME [--extin|-xi EXTENSION_OF_IN_FILES] [--extout|-xo EXTENSION_OF_OUT_FILES] [--argsin|-ai FFMPEG_ARGS_IN] [--argsout|-ao FFMPEG_ARGS_OUT] [--outfile|-o SCRIPT_FILENAME] [--execute|-e] LIST
 
 OPTIONS AND ARGUMENTS
+    LIST              pathname to text list of input file containing one filename per line
     FFMPEG_ARGS_IN    ffmpeg arguments for the input file
     FFMPEG_ARGS_OUT   ffmpeg arguments for the output file
     -e                directly executes the newly created script, then prompts for removal
 
 EXAMPLE
     Creates a list of all .flac files in the current directory:
-        $ ls -x *.flac > my_list_of_flac_files.txt
+        $ ls -x1 *.flac > my_list_of_flac_files.txt
 
     Creates a ffmpeg script named 'wewlads.sh' which converts each listed .flac 
     file to a .opus music file with the specified options:
@@ -136,6 +142,8 @@ else
                 FORCE_EXEC=1
                 ;;
             *)
+		# TODO: check that file exists, exit if not
+		[[ -e "$1" ]] || { echo "file '$1' does not exist"; exit 127; }
                 F_LIST="$1"
                 ;;
         esac	# --- end of case ---
@@ -148,7 +156,7 @@ if test "$F_LIST" = ""; then
     fn_err "no list file provided !"
 fi
 
-fn_showParams
+[[ $DEBUG ]] && fn_showParams
 
 cp "$F_LIST" "$F_WORKLIST" || exit
 
