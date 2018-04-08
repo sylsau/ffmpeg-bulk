@@ -9,7 +9,7 @@
 #  REQUIREMENTS: sed, gawk, ffmpeg, tee
 #          BUGS: ---
 #         NOTES: ---
-#        AUTHOR: Sylvain Saubier (ResponSyS), mail@systemicresponse.com
+#        AUTHOR: Sylvain Saubier (ResponSyS), mail@sylsau.com
 #       CREATED: 01/05/16 14:09
 #===============================================================================
 
@@ -31,7 +31,7 @@ ERR_NO_CMD=60
 
 FORCE_EXEC=0
 F_LIST=""
-F_WORKLIST='/tmp/ffmpegmassconv_list'
+F_WORKLIST='/tmp/ffmpegbulk_list'
 F_FFMPEG_SCRIPT='./ffmpeg_cmd.sh'
 ARGSIN=''
 ARGSOUT=''
@@ -88,13 +88,13 @@ EXAMPLE
     a .flac music file and executes it right away before prompting for its 
     removal (equivalent to both previous commands put together plus \`rm -i 
     wewlads.sh\`).
-        $ ffmpeg-mass-conv.sh -xi .wav -xo .flac cdda_list.txt -e
+        $ $PROGRAM_NAME -xi .wav -xo .flac cdda_list.txt -e
 
 AUTHOR
     Written by Sylvain Saubier (<http://SystemicResponse.com>)
 
 REPORTING BUGS
-    Mail at: <feedback@systemicresponse.com>
+    Mail at: <feedback@sylsau.com>
 EOF
 }
 
