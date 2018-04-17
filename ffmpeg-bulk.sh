@@ -17,21 +17,22 @@
 # 	make list internally
 # 	update the whole thing
 
-[[ $DEBUG ]] && set -o errexit -o nounset -o pipefail
-set -o errexit
+[[ $DEBUG ]] && set -o nounset
+set -o pipefail -o errexit -o errtrace
+trap 'echo -e "${FMT_BOLD}ERROR${FMT_OFF}: at $FUNCNAME:$LINENO"' ERR
 
-PROGRAM_NAME="${0##*/}"
-SCRIPT_NAME="${0##*/}"
+readonly PROGRAM_NAME="${0##*/}"
+readonly SCRIPT_NAME="${0##*/}"
 
-FMT_BOLD='\e[1m'
-FMT_UNDERL='\e[4m'
-FMT_OFF='\e[0m'
+readonly FMT_BOLD='\e[1m'
+readonly FMT_UNDERL='\e[4m'
+readonly FMT_OFF='\e[0m'
 
-ERR_NO_CMD=60
+readonly ERR_NO_CMD=60
 
 FORCE_EXEC=0
 F_LIST=""
-F_WORKLIST='/tmp/ffmpegbulk_list'
+readonly F_WORKLIST='/tmp/ffmpegbulk_list'
 F_FFMPEG_SCRIPT='./ffmpeg_cmd.sh'
 ARGSIN=''
 ARGSOUT=''
@@ -40,7 +41,7 @@ EXTOUT=''
 
 
 # $1 = command to test (string)
-fn_needCmd() {
+fn_need_cmd() {
     if ! command -v "$1" > /dev/null 2>&1
         then fn_err "need '$1' (command not found)" $ERR_NO_CMD
     fi
@@ -98,14 +99,14 @@ REPORTING BUGS
 EOF
 }
 
-fn_showParams() {
+fn_show_params() {
     m_say "list file is: $F_LIST, -xi: $EXTIN, -xo: $EXTOUT, -ai: $ARGSIN, -ao: $ARGSOUT, -o: $F_FFMPEG_SCRIPT" >&2
 }
 
-fn_needCmd "sed"
-fn_needCmd "gawk"
-fn_needCmd "ffmpeg"
-fn_needCmd "tee"
+fn_need_cmd "sed"
+fn_need_cmd "gawk"
+fn_need_cmd "ffmpeg"
+fn_need_cmd "tee"
 
 if test -z "$*"; then
     fn_help
@@ -156,7 +157,7 @@ if test "$F_LIST" = ""; then
     fn_err "no list file provided !"
 fi
 
-[[ $DEBUG ]] && fn_showParams
+[[ $DEBUG ]] && fn_show_params
 
 cp "$F_LIST" "$F_WORKLIST" || exit
 
