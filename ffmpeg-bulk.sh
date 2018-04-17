@@ -30,14 +30,14 @@ readonly FMT_OFF='\e[0m'
 
 readonly ERR_NO_CMD=60
 
-FORCE_EXEC=0
-F_LIST=""
+FORCE_EXEC=
 readonly F_WORKLIST='/tmp/ffmpegbulk_list'
 F_FFMPEG_SCRIPT='./ffmpeg_cmd.sh'
-ARGSIN=''
-ARGSOUT=''
-EXTIN=''
-EXTOUT=''
+F_LIST=
+ARGSIN=
+ARGSOUT=
+EXTIN=
+EXTOUT=
 
 
 # $1 = command to test (string)
@@ -174,7 +174,7 @@ chmod ug+x "$F_FFMPEG_SCRIPT"
 m_say "script \"$F_FFMPEG_SCRIPT\" now ready to be executed"
 
 # isn't that part messy asf fam?
-if test $FORCE_EXEC -eq 1; then
+if [[ $FORCE_EXEC ]]; then
 #     # if relative path to F_FFMPEG_SCRIPT, make it absolute
 #     if test "$(basename "$F_FFMPEG_SCRIPT")" = "$F_FFMPEG_SCRIPT"; then
 #         F_FFMPEG_SCRIPT="$(pwd)/$F_FFMPEG_SCRIPT"
