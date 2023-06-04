@@ -1,4 +1,3 @@
-# ffmpeg-bulk.sh - FFMPEG mass converter
 ffmpeg-bulk.sh v20230604
 	Convert multiple media files at once with ffmpeg.
 	In pure and secure bash.
