@@ -1,42 +1,24 @@
-# ffmpeg-bulk
-## FFMPEG MASS CONVERTER
-
-Creates a ffmpeg conversion script from a list of input files.  
-**Requires: `sed`, `gawk`, `ffmpeg`, `tee`**
-
-### Usage:
-
-`ffmpeg-bulk.sh [--extin|-xi EXTENSION_OF_IN_FILES] [--extout|-xo EXTENSION_OF_OUT_FILES] [--argsin|-ai FFMPEG_ARGS_IN] [--argsout|-ao FFMPEG_ARGS_OUT] [--outfile|-o SCRIPT_FILENAME] [--execute|-e] LIST`
-* `FFMPEG_ARGS_IN` are ffmpeg arguments for the input file
-* `FFMPEG_ARGS_OUT` are ffmpeg arguments for the output file
-* `-e` : directly executes the newly created script, then prompts for removal
-
-### Example:
-
-`ls -x *.flac > my_list_of_flac_files.txt`  
-* Creates a list of all *.flac* files in the current directory.
-
-`ffmpeg-bulk.sh -xi .flac -xo .opus --argsout "-c:a opus -b:a 450k" -o wewlads.sh /tmp/my_list_of_flac_files.txt`  
-* Creates a ffmpeg script named *wewlads.sh* which converts each listed *.flac* file to a *.opus* music file with the specified options.
-
-`./wewlads.sh`  
-* Executes the newly created script and convert every single *.flac* file to *.opus* files.
-
-`ffmpeg-bulk.sh -xi .wav -xo .flac cdda_list.txt -e`  
-* Creates a ffmpeg script which converts each listed *.wav* file to a *.flac* music file and directly executes it (`-e`) right away, then prompts for its removal (equivalent to both previous commands put together plus `rm -i wewlads.sh`).
-
-#### Example of generated script:
-
-    ### list.txt ###
-    01 Fahrenheit Fair Enough.mp3
-    02 TTV.mp3
-    03 Lotus Above Water.mp3
-    [...]
-
-`ffmpeg-bulk.sh list.txt -xi .mp3 -xo .ogg -ao "-c:a libvorbis -b:a 128k"`
-
-    ### ffmpeg_cmd.sh generated script ###
-    ffmpeg  -i "01 Fahrenheit Fair Enough.mp3" -c:a libvorbis -b:a 128k "01 Fahrenheit Fair Enough.ogg" || exit  
-    ffmpeg  -i "02 TTV.mp3" -c:a libvorbis -b:a 128k "02 TTV.ogg" || exit  
-    ffmpeg  -i "03 Lotus Above Water.mp3" -c:a libvorbis -b:a 128k "03 Lotus Above Water.ogg" || exit  
-    [...]
+# ffmpeg-bulk.sh - FFMPEG mass converter
+ffmpeg-bulk.sh v20230604
+	Convert multiple media files at once with ffmpeg.
+	In pure and secure bash.
+REQUIREMENTS
+	ffmpeg
+USAGE
+	ffmpeg-bulk.sh FILES... (--to|-t) EXTENSION [--args-in|-ai INPUT_ARGS] [--args-out|-ao OUTPUT_ARGS] [--force|-f] [--log-level LOG_LEVEL]
+OPTIONS AND ARGUMENTS
+	EXTENSION 		format of output files
+	INPUT_ARGS 		ffmpeg arguments for the input file
+	OUTPUT_ARGS		ffmpeg arguments for the output file
+	--force			overwrite files 
+	LOG_LEVEL		change ffmpeg '-loglevel'
+				(default: 'error', ffmpeg default: 'info')
+EXAMPLE
+	Convert all flac and wav files in the current directory to opus with the specified options:
+		$ ffmpeg-bulk.sh *.flac -t opus --args-out "-b:a 320k" *.wav
+SEE ALSO
+	ffmpeg(1)
+AUTHOR
+	Written by Sylvain Saubier
+REPORTING BUGS
+	Mail at: <feedback@sylsau.com>
