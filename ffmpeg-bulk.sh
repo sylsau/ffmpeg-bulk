@@ -69,15 +69,18 @@ OPTIONS AND ARGUMENTS
 	--force			overwrite files 
 	LOG_LEVEL		change ffmpeg '-loglevel'
 				(default: 'error', ffmpeg default: 'info')
+VARIABLES
+	FFMPEG			path to ffmpeg executable
 EXAMPLE
-	Convert all flac and wav files in the current directory to opus with the specified options:
+	Convert all flac and wav files in the current directory to opus with the specified options and a custom binary:
+		$ export FFMPEG=/usr/local/bin/my_ffmpeg
 		$ $PROGRAM_NAME *.flac -t opus --args-out "-b:a 320k" *.wav
 SEE ALSO
 	ffmpeg(1)
 AUTHOR
 	Written by Sylvain Saubier
 REPORTING BUGS
-	Mail at: <feedback@sylsau.com>
+	Mail at: <saubiersylvain@gmail.com>
 EOF
 }
 
