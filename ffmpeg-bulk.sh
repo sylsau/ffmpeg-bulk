@@ -141,11 +141,11 @@ fi
 
 m_say "converting...\n---"
 for F in "${INPUT[@]}"; do # Just show the commands
-	echo $FFMPEG $OPT_ARGS_IN -i "$F" $OPT_ARGS_OUT $OPT_FORCE $OPT_LOGLEVEL "${F%.*}$OPT_EXT"
+	echo $FFMPEG $OPT_ARGS_IN -i \"$F\" $OPT_ARGS_OUT $OPT_FORCE $OPT_LOGLEVEL \"${F%.*}$OPT_EXT\"
 done ; echo "---" ; [[ $DEBUG ]] && exit
 for F in "${INPUT[@]}"; do # Actually execute
 	m_say "converting \"$F\"..."
-	     $FFMPEG $OPT_ARGS_IN -i "$F" $OPT_ARGS_OUT $OPT_FORCE $OPT_LOGLEVEL "${F%.*}$OPT_EXT"
+	     $FFMPEG $OPT_ARGS_IN -i  "$F"  $OPT_ARGS_OUT $OPT_FORCE $OPT_LOGLEVEL  "${F%.*}$OPT_EXT"
 done
 
 exit
