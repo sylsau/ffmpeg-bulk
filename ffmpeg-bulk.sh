@@ -30,9 +30,14 @@ readonly ERR_NO_CMD=60
 
 FFMPEG="${FFMPEG:-ffmpeg}"
 OPT_EXT=
+# dirname file.ext retourne "." de toute façon
+DIR=.
+FNAME=
 OPT_ARGS_IN=
 OPT_ARGS_OUT=
 OPT_FORCE=
+OPT_PREFIX=
+OPT_SUFFIX=
 OPT_LOGLEVEL="-loglevel error"
 INPUT=( )
 
@@ -61,12 +66,13 @@ $PROGRAM_NAME v$VERSION
 REQUIREMENTS
 	ffmpeg
 USAGE
-	$PROGRAM_NAME FILES... (--to|-t) EXTENSION [--args-in|-ai INPUT_ARGS] [--args-out|-ao OUTPUT_ARGS] [--force|-f] [--log-level LOG_LEVEL]
+	$PROGRAM_NAME FILES... (--to|-t) EXTENSION [--args-in|-ai INPUT_ARGS] [--args-out|-ao OUTPUT_ARGS] [--force|-f] [--suffix|-s SUFFIX] [--prefix|-p PREFIX] [--log-level LOG_LEVEL]
 OPTIONS AND ARGUMENTS
 	EXTENSION 		format of output files
 	INPUT_ARGS 		ffmpeg arguments for the input file
 	OUTPUT_ARGS		ffmpeg arguments for the output file
 	--force			overwrite files 
+	PREFIX,SUFFIX 		add a prefix and/or suffix to output filenames
 	LOG_LEVEL		change ffmpeg '-loglevel'
 				(default: 'error', ffmpeg default: 'info')
 VARIABLES
@@ -85,7 +91,7 @@ EOF
 }
 
 fn_show_params() {
-	m_say "\n input=${INPUT[*]}\n -t=$OPT_EXT\n -ai=$OPT_ARGS_IN\n -ao=$OPT_ARGS_OUT\n -f=$OPT_FORCE\n -q=$OPT_LOGLEVEL" >&2
+	m_say "\n input=${INPUT[*]}\n -t=$OPT_EXT\n -ai=$OPT_ARGS_IN\n -ao=$OPT_ARGS_OUT\n -f=$OPT_FORCE\n -p=$OPT_PREFIX\n -s=$OPT_SUFFIX\n -q=$OPT_LOGLEVEL" >&2
 }
 
 
@@ -117,6 +123,14 @@ else
 			"--force"|"-f")
 				OPT_FORCE="-y"
 				;;
+			"--suffix"|"-s")
+				OPT_SUFFIX="$2"
+				shift
+				;;
+			"--prefix"|"-p")
+				OPT_PREFIX="$2"
+				shift
+				;;
 			"--log-level")
 				OPT_LOGLEVEL="-loglevel $2"
 				shift
@@ -141,11 +155,13 @@ fi
 
 m_say "converting...\n---"
 for F in "${INPUT[@]}"; do # Just show the commands
-	echo $FFMPEG $OPT_ARGS_IN -i \"$F\" $OPT_ARGS_OUT $OPT_FORCE $OPT_LOGLEVEL \"${F%.*}$OPT_EXT\"
+	DIR="$(dirname "$F")" ; FNAME="$(basename "$F")"
+	echo $FFMPEG $OPT_ARGS_IN -i \"$F\" $OPT_ARGS_OUT $OPT_FORCE $OPT_LOGLEVEL \"${DIR}/${OPT_PREFIX}${FNAME%.*}${OPT_SUFFIX}${OPT_EXT}\"
 done ; echo "---" ; [[ $DEBUG ]] && exit
 for F in "${INPUT[@]}"; do # Actually execute
+	DIR="$(dirname "$F")" ; FNAME="$(basename "$F")"
 	m_say "converting \"$F\"..."
-	     $FFMPEG $OPT_ARGS_IN -i  "$F"  $OPT_ARGS_OUT $OPT_FORCE $OPT_LOGLEVEL  "${F%.*}$OPT_EXT"
+	     $FFMPEG $OPT_ARGS_IN -i  "$F"  $OPT_ARGS_OUT $OPT_FORCE $OPT_LOGLEVEL  "${DIR}/${OPT_PREFIX}${FNAME%.*}${OPT_SUFFIX}${OPT_EXT}"
 done
 
 exit
